@@ -45,8 +45,12 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+# RUN rm -rf config/credentials.yml.enc
 
 
+RUN EDITOR='vi --wait' bin/rails credentials:edit --environment=production
+
+RUN chmod -R 777 /rails/config/credentials/production.key
 
 # Final stage for app image
 FROM base

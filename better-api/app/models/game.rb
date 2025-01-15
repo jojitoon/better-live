@@ -10,11 +10,11 @@ class Game < ApplicationRecord
         time_elapsed > 90
     end
 
-    def active_games
-        Game.where(time_elapsed: 0..90)
+    def self.active_games
+        Game.where(time_elapsed: 0..90).includes(:events)
     end
 
-    def create_new_game(home_team, away_team)
+    def self.create_new_game(home_team, away_team)
         Game.create(home_team: home_team, away_team: away_team)
     end
 
@@ -30,8 +30,8 @@ class Game < ApplicationRecord
         update(status: status)
     end
 
-    def self.create_new_event(type, team, minute, player)
-        self.events.create(type: type, team: team, minute: minute, player: player)
-        Redis.current.publish('events', { type: type, team: team, minute: minute, player: player }.to_json)
+    def create_new_event(type, team, minute, player)
+        events.create(type: type, team: team, minute: minute, player: player)
+        $redis.publish('events', { type: type, team: team, minute: minute, player: player }.to_json)
     end
 end

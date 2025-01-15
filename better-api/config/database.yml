@@ -19,7 +19,6 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-
 development:
   <<: *default
   database: better_api_development
@@ -82,8 +81,8 @@ production:
   primary: &primary_production
     <<: *default
     database: better_api_production
-    username: better_api
-    password: <%= ENV["BETTER_API_DATABASE_PASSWORD"] %>
+    username: postgres
+    password: postgres
   cache:
     <<: *primary_production
     database: better_api_production_cache

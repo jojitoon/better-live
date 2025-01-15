@@ -7,9 +7,9 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
 });
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379/1';
@@ -19,11 +19,11 @@ const subClient = new Redis(REDIS_URL);
 const PORT = process.env.PORT || 3000;
 
 // Subscribe to channels
-subClient.subscribe('better_live', (err) => {
+subClient.subscribe('leaderboard', (err) => {
   if (err) {
     console.error('Failed to subscribe: %s', err.message);
   } else {
-    console.log('Subscribed successfully to better_live channel');
+    console.log('Subscribed successfully to leaderboard channel');
   }
 });
 
@@ -32,7 +32,7 @@ subClient.on('message', (channel, message) => {
   try {
     const data = JSON.parse(message);
     console.log(`Received message from ${channel}:`, data);
-    
+
     // Emit the message to all connected clients
     // You can customize this based on the message type or target room
     if (data.room) {

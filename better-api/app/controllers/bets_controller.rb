@@ -18,6 +18,7 @@ class BetsController < ApplicationController
         
         if bet.save
           current_user.update(balance: current_user.balance - bet_params[:amount].to_f)
+          UpdateLeaderboardJob.perform_later
           render json: bet, status: :created
         else
           render json: { errors: bet.errors.full_messages }, status: :unprocessable_entity
@@ -26,12 +27,7 @@ class BetsController < ApplicationController
 
 
       def leaderboard
-        @leaderboard = User.joins(:bets)
-                          .where(bets: { status: 'won' })
-                          .group(:id)
-                          .order('SUM(bets.amount) DESC')
-                          .limit(10)
-                          .select('users.*, SUM(bets.amount) AS total_winnings')
+        @leaderboard = Bet.leaderboard
 
         render json: @leaderboard, status: :ok
       end
