@@ -14,7 +14,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'de79927a6d61c4179d2c4e23beec754fddb23b91d56ff7cf63321d77dbe50f1b35318788a96fc96f354b39381f0bf9fe4a73654681711a4b7365573b9cb12aa3'
+  # config.secret_key = 'efc1bc0145fade8174bdf3123e29bd1f11eddba12e30b1be81a6942af922495f8532863b495e0e90c629373b5ec30aeba65add3edc1fd43a3ae84881ad10a066'
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -32,25 +32,13 @@ Devise.setup do |config|
   # Configure the parent class responsible to send e-mails.
   # config.parent_mailer = 'ActionMailer::Base'
 
-  require 'devise/jwt/test_helpers'
-  
-  config.navigational_formats = []
-  
-  # JWT Configuration
-  config.jwt do |jwt|
-    jwt.secret = ENV.fetch('DEVISE_JWT_SECRET_KEY', Rails.application.credentials.devise_jwt_secret_key)
-    jwt.dispatch_requests = [
-      ['POST', %r{^/api/v1/auth/sign_in$}]
-    ]
-    jwt.revocation_requests = [
-      ['DELETE', %r{^/api/v1/auth/sign_out$}]
-    ]
-    jwt.expiration_time = 1.day.to_i
-  end
-
   # ==> ORM configuration
+  # Load and configure the ORM. Supports :active_record (default) and
+  # :mongoid (bson_ext recommended) by default. Other ORMs may be
+  # available as additional gems.
   require 'devise/orm/active_record'
 
+  # ==> Configuration for any authentication mechanism
   # Configure which keys are used when authenticating a user. The default is
   # just :email. You can configure it to use [:username, :subdomain], so for
   # authenticating a user, both parameters are required. Remember that those
@@ -109,7 +97,7 @@ Devise.setup do |config|
   # Notice that if you are skipping storage for all authentication paths, you
   # may want to disable generating routes to Devise's sessions controller by
   # passing skip: :sessions to `devise_for` in your config/routes.rb
-  config.skip_session_storage = [:http_auth, :params_auth]
+  config.skip_session_storage = [:http_auth]
 
   # By default, Devise cleans up the CSRF token on authentication to
   # avoid CSRF token fixation attacks. This means that, when using AJAX
@@ -138,7 +126,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = '6e25039548a54eeb981e67e0bce6b582e6f41f86b7cd47e2289ad9767368e5eb83ae1e7f8a18006d92410050596e7988418197c50250a285020197fa3041830f'
+  # config.pepper = 'e4dbe2ea19de28f19729df6260eec6a45c0f40734df719d099c60ac3ae45dea46a186240e1c8e2e186bc4884f84de7e2a40125f1f60dca319a53d2661d44400b'
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
@@ -275,7 +263,7 @@ Devise.setup do |config|
   # should add them to the navigational formats lists.
   #
   # The "*/*" below is required to match Internet Explorer requests.
-  # config.navigational_formats = ['*/*', :html, :turbo_stream]
+  config.navigational_formats = []
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
@@ -316,6 +304,18 @@ Devise.setup do |config|
   # Note: These might become the new default in future versions of Devise.
   config.responder.error_status = :unprocessable_entity
   config.responder.redirect_status = :see_other
+
+
+  config.jwt do |jwt|
+    jwt.secret = Rails.application.credentials.fetch(:secret_key_base)
+    jwt.dispatch_requests = [
+      ['POST', %r{^/login$}]
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/logout$}]
+    ]
+    jwt.expiration_time = 30.minutes.to_i
+  end
 
   # ==> Configuration for :registerable
 

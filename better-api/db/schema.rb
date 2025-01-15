@@ -10,27 +10,56 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_15_143738) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_175334) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "jwt_denylist", force: :cascade do |t|
-    t.string "jti", null: false
-    t.datetime "exp", null: false
-    t.index ["jti"], name: "index_jwt_denylist_on_jti"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.string "name"
-    t.string "username"
+  create_table "bets", id: :string, force: :cascade do |t|
+    t.string "user_id", null: false
+    t.string "game_id", null: false
+    t.float "amount"
+    t.float "odds"
+    t.string "bet_type"
+    t.string "pick"
+    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["game_id"], name: "index_bets_on_game_id"
+    t.index ["user_id"], name: "index_bets_on_user_id"
   end
+
+  create_table "events", id: :string, force: :cascade do |t|
+    t.string "type"
+    t.string "team"
+    t.integer "minute"
+    t.string "player"
+    t.string "games_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["games_id"], name: "index_events_on_games_id"
+  end
+
+  create_table "games", id: :string, force: :cascade do |t|
+    t.string "home_team"
+    t.string "away_team"
+    t.integer "home_score"
+    t.integer "away_score"
+    t.integer "time_elapsed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "users", id: :string, force: :cascade do |t|
+    t.string "name"
+    t.string "username"
+    t.string "email"
+    t.string "password_digest"
+    t.float "balance", default: 0.0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "bets", "games"
+  add_foreign_key "bets", "users"
+  add_foreign_key "events", "games", column: "games_id"
 end

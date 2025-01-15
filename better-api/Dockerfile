@@ -23,11 +23,7 @@ RUN apt-get update -qq && \
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development" \
-    POSTGRES_HOST="postgres" \
-    POSTGRES_USER="postgres" \
-    POSTGRES_PASSWORD="postgres" \
-    POSTGRES_DB="better_production"
+    BUNDLE_WITHOUT="development"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -49,8 +45,8 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
-# Run database migrations
-RUN bundle exec rails db:migrate
+
+
 
 # Final stage for app image
 FROM base
@@ -62,11 +58,7 @@ COPY --from=build /rails /rails
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp && \
-    chmod +x /rails/bin/docker-entrypoint 
-    #  && \
-    # chmod +x /rails/bin/docker-migrate
-
+    chown -R rails:rails db log storage tmp
 USER 1000:1000
 
 # Entrypoint prepares the database.

@@ -1,10 +1,17 @@
 class ApplicationController < ActionController::API
-  before_action :configure_permitted_parameters, if: :devise_controller?
-  
-  protected
-  
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :username])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name, :username])
-  end
+    include JsonWebToken
+
+    before_action :authenticate_user!
+
+    
+
+    private
+    def authenticate_user!
+        header = request.headers["Authorization"]
+        header = header.split(" ").last if header
+        decoded = jwt_decode(header)
+        @current_user = User.find(decoded[:user_id])
+    rescue
+        render json: { errors: 'Invalid token' }, status: :unauthorized
+    end
 end
