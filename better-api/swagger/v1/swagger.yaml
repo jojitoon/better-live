@@ -1,0 +1,42 @@
+---
+openapi: 3.0.1
+info:
+  title: Better API V1
+  version: v1
+  description: This is the API documentation for the Better application.
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearer_format: JWT
+  schemas:
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        username:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+    error:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+paths: {}
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3000
