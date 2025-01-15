@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./better-api
+      dockerfile: Dockerfile
+    container_name: better-api
+    ports:
+      - "3001:3000"
+    environment:
+      - RAILS_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/better_production
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_PROVIDER=REDIS_URL
+      - BETTER_REDIS_URL=redis://redis:6379/0
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=better_production
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "/rails/bin/docker-migrate && ./bin/thrust ./bin/rails server"
+    networks:
+      - better-network
+    restart: unless-stopped
+
+  live-api:
+    build:
+      context: ./better-live-api
+      dockerfile: Dockerfile
+    container_name: better-live-api
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://api:3000
+      - REDIS_URL=redis://redis:6379/1
+      - REDIS_PROVIDER=REDIS_URL
+      - BETTER_REDIS_URL=redis://redis:6379/1
+      - REDIS_PUB_SUB_URL=redis://redis:6379/2
+    depends_on:
+      - api
+      - redis
+    networks:
+      - better-network
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./better-live-web
+      dockerfile: Dockerfile
+    container_name: better-live-web
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost/api
+      - VITE_WS_URL=ws://localhost/socket.io
+      - VITE_LIVE_API_URL=http://localhost/live
+      - VITE_RAILS_API_URL=http://localhost/api
+      - VITE_API_VERSION=v1
+      - VITE_APP_NAME=Better Live
+    depends_on:
+      - api
+      - live-api
+    networks:
+      - better-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: better-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=better_production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - better-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: better-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - better-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  better-network:
+    driver: bridge
