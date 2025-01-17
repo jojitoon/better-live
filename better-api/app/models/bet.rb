@@ -10,8 +10,13 @@ class Bet < ApplicationRecord
 
     
 
-    def self.leaderboard
-        User.joins(:bets)
+    def self.leaderboard(no_cache = false)
+
+      leaderboard_cache = $redis.get('leaderboard')
+      if leaderboard_cache && !no_cache
+        JSON.parse(leaderboard_cache)
+      else
+        leaderboard = User.joins(:bets)
                           # .where(bets: { status: 'won' })
                           .group(:id)
                           .order('SUM(bets.amount) DESC')
@@ -20,6 +25,9 @@ class Bet < ApplicationRecord
                           .map do |user|
                             { name: user.username, total_winnings: user.total_winnings, id: user.id }
                           end
+
+        $redis.set('leaderboard', leaderboard.to_json, ex: 60) # Cache for 1 minute
+        leaderboard
       end
 
     private
