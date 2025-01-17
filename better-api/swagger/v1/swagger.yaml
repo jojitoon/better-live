@@ -1,0 +1,153 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/login":
+    post:
+      summary: login auth
+      tags:
+      - auth
+      responses:
+        '200':
+          description: successful
+  "/bets":
+    post:
+      summary: create bet
+      tags:
+      - bets
+      responses:
+        '200':
+          description: successful
+  "/leaderboard":
+    get:
+      summary: leaderboard bet
+      tags:
+      - bets
+      responses:
+        '200':
+          description: successful
+  "/games":
+    get:
+      summary: list games
+      tags:
+      - games
+      responses:
+        '200':
+          description: successful
+    post:
+      summary: create game
+      tags:
+      - games
+      responses:
+        '200':
+          description: successful
+  "/games/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        type: string
+    get:
+      summary: show game
+      tags:
+      - games
+      responses:
+        '200':
+          description: successful
+    patch:
+      summary: update game
+      tags:
+      - games
+      responses:
+        '200':
+          description: successful
+    put:
+      summary: update game
+      tags:
+      - games
+      responses:
+        '200':
+          description: successful
+    delete:
+      summary: delete game
+      tags:
+      - games
+      responses:
+        '200':
+          description: successful
+  "/me":
+    get:
+      summary: list users
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+  "/users":
+    get:
+      summary: list users
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+    post:
+      summary: create user
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+  "/users/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        type: string
+    get:
+      summary: show user
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+    patch:
+      summary: update user
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+    put:
+      summary: update user
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+    delete:
+      summary: delete user
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+  "/fund-user-dummy":
+    get:
+      summary: fund_user_dummy user
+      tags:
+      - users
+      responses:
+        '200':
+          description: successful
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com

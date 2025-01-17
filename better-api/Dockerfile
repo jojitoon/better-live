@@ -16,6 +16,7 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
+    apt-get install -y cron && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
@@ -23,7 +24,8 @@ RUN apt-get update -qq && \
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development" \
+    BUNDLE_PATH="/gems"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -73,6 +75,7 @@ USER 1000:1000
 # RUN bundle exec whenever  --update-crontab
 
 
+# CMD [ "bundle", "exec", "sidekiq" ]
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 

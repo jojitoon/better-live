@@ -1,4 +1,5 @@
-require 'test_helper'
+# spec/models/bet_spec.rb
+require 'rails_helper'
 
 RSpec.describe Bet, type: :model do
   describe 'associations' do
