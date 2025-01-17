@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import Redis from 'ioredis';
 import { channel } from 'diagnostics_channel';
 
-const app = express();
+export const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -62,7 +62,7 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  // console.log('A user connected');
 
   socket.on('disconnect', () => {
     console.log('User disconnected');

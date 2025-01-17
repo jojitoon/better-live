@@ -1,153 +1,334 @@
----
-openapi: 3.0.1
-info:
-  title: API V1
-  version: v1
-paths:
-  "/login":
-    post:
-      summary: login auth
-      tags:
-      - auth
-      responses:
-        '200':
-          description: successful
-  "/bets":
-    post:
-      summary: create bet
-      tags:
-      - bets
-      responses:
-        '200':
-          description: successful
-  "/leaderboard":
-    get:
-      summary: leaderboard bet
-      tags:
-      - bets
-      responses:
-        '200':
-          description: successful
-  "/games":
-    get:
-      summary: list games
-      tags:
-      - games
-      responses:
-        '200':
-          description: successful
-    post:
-      summary: create game
-      tags:
-      - games
-      responses:
-        '200':
-          description: successful
-  "/games/{id}":
-    parameters:
-    - name: id
-      in: path
-      description: id
-      required: true
-      schema:
-        type: string
-    get:
-      summary: show game
-      tags:
-      - games
-      responses:
-        '200':
-          description: successful
-    patch:
-      summary: update game
-      tags:
-      - games
-      responses:
-        '200':
-          description: successful
-    put:
-      summary: update game
-      tags:
-      - games
-      responses:
-        '200':
-          description: successful
-    delete:
-      summary: delete game
-      tags:
-      - games
-      responses:
-        '200':
-          description: successful
-  "/me":
-    get:
-      summary: list users
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-  "/users":
-    get:
-      summary: list users
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-    post:
-      summary: create user
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-  "/users/{id}":
-    parameters:
-    - name: id
-      in: path
-      description: id
-      required: true
-      schema:
-        type: string
-    get:
-      summary: show user
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-    patch:
-      summary: update user
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-    put:
-      summary: update user
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-    delete:
-      summary: delete user
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-  "/fund-user-dummy":
-    get:
-      summary: fund_user_dummy user
-      tags:
-      - users
-      responses:
-        '200':
-          description: successful
-servers:
-- url: https://{defaultHost}
-  variables:
-    defaultHost:
-      default: www.example.com
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Better API V1",
+    "version": "v1"
+  },
+  "components": {
+    "schemas": {
+      "user": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "email": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "number"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "bet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "integer"
+          },
+          "game_id": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "odds": {
+            "type": "number"
+          },
+          "pick": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "game": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "home_team": {
+            "type": "string"
+          },
+          "away_team": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearer_format": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Authenticates user",
+        "tags": [
+          "Authentication"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "user authenticated"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bets": {
+      "post": {
+        "summary": "Creates a bet",
+        "tags": [
+          "Bets"
+        ],
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "bet created"
+          },
+          "422": {
+            "description": "game closed"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "game_id": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "bet_type": {
+                    "type": "string"
+                  },
+                  "pick": {
+                    "type": "string"
+                  },
+                  "odds": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "game_id",
+                  "amount",
+                  "pick",
+                  "odds"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/leaderboard": {
+      "get": {
+        "summary": "Retrieves betting leaderboard",
+        "tags": [
+          "Bets"
+        ],
+        "responses": {
+          "200": {
+            "description": "leaderboard retrieved"
+          }
+        }
+      }
+    },
+    "/games": {
+      "get": {
+        "summary": "Lists all active games",
+        "tags": [
+          "Games"
+        ],
+        "responses": {
+          "200": {
+            "description": "games found"
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "summary": "Creates a user",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "user created"
+          },
+          "422": {
+            "description": "invalid request"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "username",
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "summary": "Retrieves current user",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "current user retrieved"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/users/{id}/bets": {
+      "get": {
+        "summary": "Retrieves user bets",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "bets retrieved"
+          }
+        }
+      }
+    },
+    "/users/fund-user-dummy": {
+      "post": {
+        "summary": "Funds user account (dummy)",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user funded"
+          }
+        }
+      }
+    }
+  }
+}
