@@ -18,7 +18,7 @@ class BetsController < ApplicationController
         bet.id = SecureRandom.uuid
         
         if bet.save
-          @current_user.update(balance: @current_user.balance - bet_params[:amount].to_f)
+          @current_user.update!(balance: @current_user.balance - bet_params[:amount].to_f)
           UpdateLeaderboardJob.perform_async
           render json: bet, status: :created
         else

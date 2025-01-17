@@ -29,6 +29,7 @@ class Bet < ApplicationRecord
         $redis.set('leaderboard', leaderboard.to_json, ex: 60) # Cache for 1 minute
         leaderboard
       end
+    end
 
     private
     def game_must_be_open
