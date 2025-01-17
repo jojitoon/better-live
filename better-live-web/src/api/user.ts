@@ -25,7 +25,7 @@ export async function getMe(): Promise<User> {
 }
 
 export async function fundUserDummy() {
-  const { data } = await ApiCaller.get(QUERY_PATHS.FUND_USER_DUMMY);
+  const { data } = await ApiCaller.post(QUERY_PATHS.FUND_USER_DUMMY);
 
   return (data || null) as User;
 }

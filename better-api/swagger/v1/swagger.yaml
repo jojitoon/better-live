@@ -312,7 +312,7 @@
         }
       }
     },
-    "/users/fund-user-dummy": {
+    "/fund-user-dummy": {
       "post": {
         "summary": "Funds user account (dummy)",
         "tags": [

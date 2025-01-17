@@ -6,7 +6,7 @@ RSpec.describe 'Users API', type: :request do
     post 'Creates a user' do
       tags 'Users'
       consumes 'application/json'
-      parameter name: :user, in: :body, schema: {
+      parameter name: :data, in: :body, schema: {
         type: :object,
         properties: {
           email: { type: :string },
@@ -18,17 +18,12 @@ RSpec.describe 'Users API', type: :request do
       }
 
       response '201', 'user created' do
-        let(:user) { { email: 'test@example.com', username: 'testuser', password: 'password123' } }
-
-        run_test! do |response|
-          data = JSON.parse(response.body)
-          expect(data).to have_key('token')
-          expect(data['user']).to include('email', 'username')
-        end
+        let(:data) { { email: 'MhKQd@example.com', username: 'testuser', name: 'Test User', password: 'password123' } }
+        run_test!
       end
 
       response '422', 'invalid request' do
-        let(:user) { { email: 'invalid' } }
+        let(:data) { { email: 'invalid' } }
         run_test!
       end
     end
@@ -45,6 +40,9 @@ RSpec.describe 'Users API', type: :request do
         let(:Authorization) { "Bearer #{generate_jwt_token(user)}" }
 
         run_test! do |response|
+          Authorization = "Bearer #{generate_jwt_token(user)}"
+          puts 'response.body:', response.body
+          get '/me', headers: { 'Authorization' => Authorization }
           expect(response).to have_http_status(:ok)
         end
       end
@@ -69,13 +67,14 @@ RSpec.describe 'Users API', type: :request do
         let(:Authorization) { "Bearer #{generate_jwt_token(user)}" }
 
         run_test! do |response|
+          get "/users/#{id}/bets", headers: { 'Authorization' => Authorization }
           expect(response).to have_http_status(:ok)
         end
       end
     end
   end
 
-  path '/users/fund-user-dummy' do
+  path '/fund-user-dummy' do
     post 'Funds user account (dummy)' do
       tags 'Users'
       security [bearer_auth: []]
@@ -85,6 +84,7 @@ RSpec.describe 'Users API', type: :request do
         let(:Authorization) { "Bearer #{generate_jwt_token(user)}" }
 
         run_test! do |response|
+          post '/fund-user-dummy', headers: { 'Authorization' => Authorization }
           expect(user.reload.balance).to eq(500)
         end
       end

@@ -23,7 +23,7 @@ RSpec.describe 'Bets API', type: :request do
         let(:user) { create(:user, balance: 1000) }
         let(:game) { create(:game) }
         let(:Authorization) { "Bearer #{generate_jwt_token(user)}" }
-        let(:bet) { { game_id: game.id, amount: 100, pick: 'home_team', odds: 1.5 } }
+        let(:bet) { { game_id: game.id, amount: 100, pick: 'home', odds: 1.5 , bet_type: 'winner'} }
 
         run_test! do |response|
           data = JSON.parse(response.body)
@@ -45,7 +45,7 @@ RSpec.describe 'Bets API', type: :request do
 
       response '422', 'game closed' do
         let(:user) { create(:user, balance: 1000) }
-        let(:game) { create(:game, status: 'closed') }
+        let(:game) { create(:game, :closed) }
         let(:Authorization) { "Bearer #{generate_jwt_token(user)}" }
         let(:bet) { { game_id: game.id, amount: 100, pick: 'home_team', odds: 1.5 } }
 
