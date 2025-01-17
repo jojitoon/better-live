@@ -1,6 +1,6 @@
 # BETTER LIVE
 
-# A better way to live bet on games
+A better way to live bet on games
 
 # Setup
 
@@ -14,4 +14,34 @@ docker compose build
 
 ```bash
 docker compose up
+```
+
+# NOTE
+
+- This is a work in progress
+- If the docker does not work, try running the three applications separately
+
+## Rails api
+
+```bash
+bundle install
+
+rails db:create
+rails db:migrate
+
+rails server
+```
+
+## Live api
+
+```bash
+npm install
+npm run dev
+```
+
+## Web
+
+```bash
+npm install
+npm run dev
 ```
