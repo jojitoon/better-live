@@ -6,7 +6,7 @@ RSpec.describe 'Users API', type: :request do
     post 'Creates a user' do
       tags 'Users'
       consumes 'application/json'
-      parameter name: :data, in: :body, schema: {
+      parameter name: :user, in: :body, schema: {
         type: :object,
         properties: {
           email: { type: :string },
@@ -18,12 +18,12 @@ RSpec.describe 'Users API', type: :request do
       }
 
       response '201', 'user created' do
-        let(:data) { { email: 'MhKQd@example.com', username: 'testuser', name: 'Test User', password: 'password123' } }
+        let(:user) { { email: 'MhKQd@example.com', username: 'testuser', name: 'Test User', password: 'password123' } }
         run_test!
       end
 
       response '422', 'invalid request' do
-        let(:data) { { email: 'invalid' } }
+        let(:user) { { email: 'invalid' } }
         run_test!
       end
     end
