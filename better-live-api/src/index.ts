@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import Redis from 'ioredis';
+import { channel } from 'diagnostics_channel';
 
 const app = express();
 const httpServer = createServer(app);
@@ -47,12 +48,8 @@ subClient.subscribe('games', (err) => {
 subClient.on('message', (channel, message) => {
   try {
     const data = JSON.parse(message);
-    console.log(`Received message from ${channel}:`, data);
 
-    console.log(data);
-
-    // Emit the message to all connected clients
-    // You can customize this based on the message type or target room
+    console.log('Message received:', channel);
 
     io.emit(channel, data);
   } catch (error) {
@@ -66,18 +63,6 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('A user connected');
-
-  // Handle joining rooms
-  socket.on('join', (room) => {
-    socket.join(room);
-    console.log(`Socket ${socket.id} joined room ${room}`);
-  });
-
-  // Handle leaving rooms
-  socket.on('leave', (room) => {
-    socket.leave(room);
-    console.log(`Socket ${socket.id} left room ${room}`);
-  });
 
   socket.on('disconnect', () => {
     console.log('User disconnected');

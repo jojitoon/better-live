@@ -1,0 +1,5 @@
+:scheduler:
+  :schedule:
+    simulate:
+      cron: '0/5 * * * * *' # every 2 seconds
+      class: SimulateJob

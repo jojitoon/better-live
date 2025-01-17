@@ -21,13 +21,20 @@ docker compose up
 - This is a work in progress
 - If the docker does not work, try running the three applications separately
 
+# Installation
+
 ## Rails api
 
 ```bash
 bundle install
 
 rails db:create
+
 rails db:migrate
+
+bundle exec sidekiq
+
+whenever --update-crontab --set environment='development'
 
 rails server
 ```
@@ -36,6 +43,7 @@ rails server
 
 ```bash
 npm install
+
 npm run dev
 ```
 
@@ -43,5 +51,6 @@ npm run dev
 
 ```bash
 npm install
+
 npm run dev
 ```

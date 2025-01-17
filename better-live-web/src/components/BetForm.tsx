@@ -11,16 +11,7 @@ import {
 import { useMemo, useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from './ui/table';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
-import { Bold, Italic, Underline } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { betOnGame } from '@/api/other';
 

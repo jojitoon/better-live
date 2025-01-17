@@ -1,6 +1,6 @@
 import { Game, getGames, getLeaderboard } from '@/api/other';
 import { QUERY_PATHS } from '@/lib/constants';
-import { QueryOptions, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 export const useGames = () => {
   return useQuery<any, any, Game[]>({

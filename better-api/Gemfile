@@ -28,12 +28,11 @@ gem 'jsonapi-serializer'
 
 gem 'redis'
 gem 'sidekiq'
+gem 'sidekiq-scheduler'
 
 gem 'faker'
 
 gem 'rack-cors'
-
-gem 'whenever', require: false
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
