@@ -6,7 +6,8 @@ class UsersController < ApplicationController
     user = User.new(user_params)
     user.id = SecureRandom.uuid
     if user.save
-      render json: user, status: :created
+      token = jwt_encode(user_id: user.id)
+      render json: { user: user, token: token }, status: :created
     else
       render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
     end
@@ -22,6 +23,11 @@ class UsersController < ApplicationController
 
   def bets
     render json: @user.bets, status: :ok
+  end
+
+  def fund_user_dummy
+    @current_user.update!(balance: @current_user.balance + 500)
+    render json: { message: 'User balance updated' }, status: :ok
   end
 
   private

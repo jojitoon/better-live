@@ -9,19 +9,23 @@ services:
     ports:
       - '3001:3000'
     environment:
-      - RAILS_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/better_api_production
+      - RAILS_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/better_api_development
       - REDIS_URL=redis://redis:6379/0
       - REDIS_PROVIDER=REDIS_URL
       - BETTER_REDIS_URL=redis://redis:6379/0
       - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=better_api_production
+      - POSTGRES_DB=better_api_development
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "bundle exec rails db:migrate && ./bin/thrust ./bin/rails server"
+    #for production
+    # command: sh -c "bundle exec rails db:migrate && ./bin/thrust ./bin/rails server"
+    #for development
+    command: sh -c "bundle exec rails db:migrate && bundle exec rails server -p 3000 -b '0.0.0.0'"
+
     networks:
       - better-network
     restart: unless-stopped
@@ -58,7 +62,6 @@ services:
       - VITE_API_URL=http://localhost/api
       - VITE_WS_URL=ws://localhost/socket.io
       - VITE_LIVE_API_URL=http://localhost/live
-      - VITE_RAILS_API_URL=http://localhost/api
       - VITE_API_VERSION=v1
       - VITE_APP_NAME=Better Live
     depends_on:
@@ -70,11 +73,11 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: better_api_production
+    container_name: better_api_development
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=better_api_production
+      - POSTGRES_DB=better_api_development
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

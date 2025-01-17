@@ -16,7 +16,7 @@ const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379/1';
 const pubClient = new Redis(REDIS_URL);
 const subClient = new Redis(REDIS_URL);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Subscribe to channels
 subClient.subscribe('leaderboard', (err) => {
@@ -27,19 +27,34 @@ subClient.subscribe('leaderboard', (err) => {
   }
 });
 
+subClient.subscribe('events', (err) => {
+  if (err) {
+    console.error('Failed to subscribe: %s', err.message);
+  } else {
+    console.log('Subscribed successfully to events channel');
+  }
+});
+
+subClient.subscribe('games', (err) => {
+  if (err) {
+    console.error('Failed to subscribe: %s', err.message);
+  } else {
+    console.log('Subscribed successfully to games channel');
+  }
+});
+
 // Listen for messages
 subClient.on('message', (channel, message) => {
   try {
     const data = JSON.parse(message);
     console.log(`Received message from ${channel}:`, data);
 
+    console.log(data);
+
     // Emit the message to all connected clients
     // You can customize this based on the message type or target room
-    if (data.room) {
-      io.to(data.room).emit(data.event || 'message', data.payload);
-    } else {
-      io.emit(data.event || 'message', data.payload);
-    }
+
+    io.emit(channel, data);
   } catch (error) {
     console.error('Error processing message:', error);
   }

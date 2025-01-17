@@ -1,5 +1,5 @@
 class BetsController < ApplicationController
-    before_action :authenticate_user!
+    skip_before_action :authenticate_user!, only: [:leaderboard]
 
     def create
         game = Game.find(bet_params[:game_id])
@@ -9,16 +9,17 @@ class BetsController < ApplicationController
           return
         end
     
-        if current_user.balance < bet_params[:amount].to_f
+        if @current_user.balance < bet_params[:amount].to_f
           render json: { error: 'Insufficient balance' }, status: :unprocessable_entity
           return
         end
     
-        bet = current_user.bets.build(bet_params)
+        bet = @current_user.bets.build(bet_params)
+        bet.id = SecureRandom.uuid
         
         if bet.save
-          current_user.update(balance: current_user.balance - bet_params[:amount].to_f)
-          UpdateLeaderboardJob.perform_later
+          @current_user.update(balance: @current_user.balance - bet_params[:amount].to_f)
+          UpdateLeaderboardJob.perform_async
           render json: bet, status: :created
         else
           render json: { errors: bet.errors.full_messages }, status: :unprocessable_entity

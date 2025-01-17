@@ -80,9 +80,7 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: better_api_production
-    username: postgres
-    password: postgres
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
     <<: *primary_production
     database: better_api_production_cache

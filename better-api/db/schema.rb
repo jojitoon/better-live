@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_15_175334) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_17_113712) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,14 +29,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_175334) do
   end
 
   create_table "events", id: :string, force: :cascade do |t|
-    t.string "type"
+    t.string "event_type"
     t.string "team"
     t.integer "minute"
     t.string "player"
-    t.string "games_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["games_id"], name: "index_events_on_games_id"
+    t.string "game_id", null: false
+    t.index ["game_id"], name: "index_events_on_game_id"
   end
 
   create_table "games", id: :string, force: :cascade do |t|
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_175334) do
     t.integer "time_elapsed"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "odds", default: {}
   end
 
   create_table "users", id: :string, force: :cascade do |t|
@@ -61,5 +62,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_175334) do
 
   add_foreign_key "bets", "games"
   add_foreign_key "bets", "users"
-  add_foreign_key "events", "games", column: "games_id"
+  add_foreign_key "events", "games"
 end
